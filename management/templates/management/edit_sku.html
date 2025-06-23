@@ -1,0 +1,10 @@
+{% include 'management/base.html'%}
+<h2>Edit SKU: {{ sku.code }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+    <a href="{% url 'add_sku' %}">Cancel</a>
+</form>
+

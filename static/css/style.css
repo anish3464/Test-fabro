@@ -1,0 +1,372 @@
+/* Dark Background and Base Styles */
+body {
+    text-align: center;
+    background-color: #1e1e2f;
+    color: #ffffff;
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    color: #00aaff;
+}
+
+.form-container {
+    width: 80%;
+    max-width: 700px;
+    margin: 5% auto;
+    padding: 20px;
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #007bff;
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Headers */
+h3 {
+    color: #00aaff;
+    margin-bottom: 10px;
+}
+
+/* Form Styling */
+form {
+    background-color: #29293d;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+form button {
+    background-color: #00aaff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #0077cc;
+}
+
+/* Input Fields */
+form input[type="text"], form input[type="number"] {
+    background-color: #33334d;
+    color: #ffffff;
+    border: 1px solid #444466;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* List Styling */
+ul {
+    background-color: #e3e3f1;
+    border-radius: 10px;
+    color: #ffffff;
+    padding: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+ul li {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+ul li:hover {
+    background-color: #4c4cb8;
+}
+
+/* Scrollbar Styles */
+ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+ul::-webkit-scrollbar-thumb {
+    background-color: #444466;
+    border-radius: 4px;
+}
+
+ul::-webkit-scrollbar-track {
+    background-color: #29293d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+}
+
+.delete-button {
+    color: #ff4d4d;
+    text-decoration: none;
+    margin-left: 15px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.delete-button:hover {
+    color: #ff0000;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #2a2a3d;
+    padding: 15px 30px;
+    border-bottom: 2px solid #444;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.topbar .logo h2 {
+    color: #ffffff;
+    margin: 0;
+}
+
+.nav-links a {
+    color: #f0f0f0;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #444;
+}
+
+/* Content Styles */
+.content {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    z-index: 100;
+    background-color: #2a2a3d;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.nav-left, .nav-right {
+        display: flex;
+        align-items: center;
+    }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Box */
+.modal-box {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    color: #fff;
+    width: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 10px 20px;
+    background: #2a2a2a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 20px;
+    text-align: center;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 10px 20px;
+    background: #2a2a2a;
+    text-align: right;
+}
+
+/* Close Button */
+.modal-close {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.car-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #fff;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+}
+
+.car-table th, .car-table td {
+    padding: 10px;
+    border: 1px solid #444;
+    text-align: center;
+}
+
+.car-table th {
+    background-color: #1e1e1e;
+    font-weight: bold;
+}
+
+.delete-button {
+    color: red;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.delete-button:hover {
+    text-decoration: underline;
+    color: darkred;
+}
+
+body.light-mode {
+    background-color: #f5f5f5;
+    color: #000;
+}
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3 {
+    color: #0077cc;
+}
+body.light-mode .form-container {
+    background-color: #ffffff;
+    color: #000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+body.light-mode form {
+    background-color: #f2f2f2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+body.light-mode form button {
+    background-color: #007bff;
+    color: #fff;
+}
+body.light-mode form button:hover {
+    background-color: #0056b3;
+}
+body.light-mode form input[type="text"],
+body.light-mode form input[type="number"] {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+}
+body.light-mode ul {
+    background-color: #fff;
+    color: #000;
+}
+body.light-mode ul li {
+    background-color: #f5f5f5;
+    color: #000;
+}
+body.light-mode ul li:hover {
+    background-color: #e0e0ff;
+}
+body.light-mode ul::-webkit-scrollbar-track {
+    background-color: #ddd;
+}
+body.light-mode ul::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+}
+body.light-mode .delete-button {
+    color: #d10000;
+}
+body.light-mode .delete-button:hover {
+    color: #b30000;
+}
+body.light-mode .topbar {
+    background-color: #ffffff;
+    color: #000;
+    border-bottom: 2px solid #ccc;
+}
+body.light-mode .topbar .logo h2 {
+    color: #000;
+}
+body.light-mode .nav-links a {
+    color: #333;
+}
+body.light-mode .nav-links a:hover {
+    background-color: #ddd;
+}
+body.light-mode .content {
+    background-color: #ffffff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+body.light-mode .modal-overlay {
+    background: rgba(0, 0, 0, 0.4);
+}
+body.light-mode .modal-box {
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+}
+body.light-mode .modal-header,
+body.light-mode .modal-footer {
+    background: #f0f0f0;
+}
+body.light-mode .car-table {
+    background-color: #fff;
+    color: #000;
+}
+body.light-mode .car-table th {
+    background-color: #f0f0f0;
+}

@@ -1,0 +1,18 @@
+<!-- templates/management/upload_csv.html -->
+{% include "management/base.html" %}
+<h2 style="color:white;">Upload Car Details (CSV)</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Upload</button>
+</form>
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li style="color:{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+

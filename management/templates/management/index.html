@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fabro Leather</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.125rem;
+            color: var(--dark-text-secondary);
+            font-weight: 400;
+        }
+
+        body.light-mode .dashboard-subtitle {
+            color: var(--light-text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--dark-surface), var(--dark-card));
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.light-mode .stat-card {
+            background: linear-gradient(135deg, var(--light-surface), var(--light-card));
+            border-color: #e2e8f0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.complaints {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .stat-icon.vehicles {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .stat-icon.skus {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .stat-icon.settings {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+
+        body.light-mode .stat-value {
+            color: var(--light-text);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--dark-text-secondary);
+            font-weight: 500;
+        }
+
+        body.light-mode .stat-label {
+            color: var(--light-text-secondary);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .action-card {
+            background: var(--dark-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.light-mode .action-card {
+            background: var(--light-surface);
+            border-color: #e2e8f0;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        }
+
+        .action-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+
+        body.light-mode .action-content h3 {
+            color: var(--light-text);
+        }
+
+        .action-content p {
+            font-size: 0.875rem;
+            color: var(--dark-text-secondary);
+            line-height: 1.5;
+        }
+
+        body.light-mode .action-content p {
+            color: var(--light-text-secondary);
+        }
+
+        .recent-activity {
+            background: var(--dark-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .recent-activity {
+            background: var(--light-surface);
+            border-color: #e2e8f0;
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        body.light-mode .activity-title {
+            color: var(--light-text);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .activity-item:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .activity-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            background: var(--primary-color);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.875rem;
+            color: var(--dark-text);
+            margin-bottom: 0.25rem;
+        }
+
+        body.light-mode .activity-text {
+            color: var(--light-text);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--dark-text-secondary);
+        }
+
+        body.light-mode .activity-time {
+            color: var(--light-text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card,
+            .action-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'management/base.html' %}
+    
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Welcome to Fabro Leather</h1>
+            <p class="dashboard-subtitle">Comprehensive Car Seat Management System</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon complaints">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ total_complaints|default:"0" }}</div>
+                <div class="stat-label">Total Complaints</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon vehicles">
+                        <i class="fas fa-car"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ total_vehicles|default:"0" }}</div>
+                <div class="stat-label">Vehicle Models</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon skus">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ total_skus|default:"0" }}</div>
+                <div class="stat-label">SKU Items</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon settings">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ total_settings|default:"0" }}</div>
+                <div class="stat-label">Master Settings</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="action-card" onclick="window.location.href='{% url 'add_complaint' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Add New Complaint</h3>
+                        <p>Register a new customer complaint with media attachments and detailed information</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card" onclick="window.location.href='{% url 'complaint_list' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>View All Complaints</h3>
+                        <p>Browse, filter, and manage existing complaints with advanced search capabilities</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card" onclick="window.location.href='{% url 'car_details' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Vehicles</h3>
+                        <p>Add and configure vehicle models, brands, and specifications</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card" onclick="window.location.href='{% url 'add_sku' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>SKU Management</h3>
+                        <p>Manage product SKUs and inventory with bulk upload capabilities</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card" onclick="window.location.href='{% url 'master_settings' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>System Settings</h3>
+                        <p>Configure master data including channels, countries, and case categories</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-card" onclick="window.location.href='{% url 'car_details' %}'">
+                <div class="action-header">
+                    <div class="action-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Vehicle Database</h3>
+                        <p>Browse and search through the complete vehicle configuration database</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-activity">
+            <div class="activity-header">
+                <h2 class="activity-title">Recent Activity</h2>
+                <a href="{% url 'complaint_list' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">New complaint registered for BMW X5</div>
+                    <div class="activity-time">2 hours ago</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Vehicle configuration updated</div>
+                    <div class="activity-time">4 hours ago</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Complaint #ABC123 resolved</div>
+                    <div class="activity-time">1 day ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add active state to current nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
