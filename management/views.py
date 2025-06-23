@@ -543,13 +543,26 @@ def add_sku(request):
                 for row in reader:
                     code = row.get('code', '').strip()
                     description = row.get('description', '').strip()
-                    if code and not SKU.objects.filter(code=code).exists():
-                        SKU.objects.create(code=code, description=description)
-                        added += 1
-                    else:
+                    region_name = row.get('region', '').strip()
+
+                    if not code:
+                        continue  # skip rows with no code
+
+                    if SKU.objects.filter(code=code).exists():
                         skipped += 1
+                        continue
+
+                    region = MasterSetting.objects.filter(name=region_name, setting_type='Region').first()
+
+                    SKU.objects.create(
+                        code=code,
+                        description=description,
+                        region=region  # may be None if region doesn't exist
+                    )
+                    added += 1
 
                 upload_feedback = f"{added} SKUs added. {skipped} duplicates skipped."
+
 
     return render(request, 'management/add_skus.html', {
         'form': form,

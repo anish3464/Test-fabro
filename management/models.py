@@ -45,13 +45,7 @@ class YearRange(models.Model):
 class SKU(models.Model):
     code = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=255, blank=True, null=True)
-    region = models.ForeignKey(
-        'management.MasterSetting', 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        limit_choices_to={'category': 'Region'}, 
-        related_name="region"
-    )
+    region = models.ForeignKey('MasterSetting', on_delete=models.SET_NULL, null=True, blank=True, related_name='skus_by_region')
 
     def __str__(self):
         return self.code

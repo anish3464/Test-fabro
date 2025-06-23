@@ -89,6 +89,7 @@
         }
 
         .form-input,
+        .form-select,
         .form-textarea {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -421,7 +422,12 @@
                         {{ form.description }}
                     </div>
 
-                    <button type="submit" class="btn btn-primary">
+                    <div class="form-group">
+                        <label class="form-label">Region</label>
+                        {{ form.region }}
+                    </div>
+
+                    <button type="submit" name="add_sku" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         Add SKU
                     </button>

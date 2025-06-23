@@ -127,11 +127,15 @@ from django import forms
 class SKUForm(forms.ModelForm):
     class Meta:
         model = SKU
-        fields = ['code', 'description']
+        fields = ['code', 'description', 'region']
         widgets = {
             'code': forms.TextInput(attrs={'class': 'form-input'}),
             'description': forms.Textarea(attrs={'class': 'form-textarea', 'rows': 3}),
+            'region': forms.Select(attrs={'class': 'form-select'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(SKUForm, self).__init__(*args, **kwargs)
+        self.fields['region'].queryset = MasterSetting.objects.filter(category='Region')
 
 
 class SKUUploadForm(forms.Form):
