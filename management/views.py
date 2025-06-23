@@ -248,17 +248,6 @@ def add_complaint(request):
     if request.method == 'POST':
         form = ComplaintForm(request.POST)
         if form.is_valid():
-            # Handle date conversion
-            date_str = request.POST.get('date')
-            if date_str:
-                try:
-                    # Convert from YYYY-MM-DD format to date object
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-                    form.instance.date = date_obj
-                except ValueError:
-                    messages.error(request, 'Invalid date format.')
-                    return render(request, 'management/add_complaint.html', {'form': form})
-            
             complaint = form.save()
 
             # Save each uploaded file
@@ -268,7 +257,6 @@ def add_complaint(request):
                     file=uploaded_file
                 )
 
-            messages.success(request, 'Complaint added successfully!')
             return redirect('complaint_list')
     else:
         form = ComplaintForm()
@@ -394,38 +382,19 @@ def edit_complaint(request, complaint_id):
     if request.method == 'POST':
         form = ComplaintForm(request.POST, request.FILES, instance=complaint)
         if form.is_valid():
-            # Handle date conversion
-            date_str = request.POST.get('date')
-            if date_str:
-                try:
-                    # Convert from YYYY-MM-DD format to date object
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-                    form.instance.date = date_obj
-                except ValueError:
-                    messages.error(request, 'Invalid date format.')
-                    return render(request, 'management/edit_complaint.html', {
-                        'form': form,
-                        'complaint': complaint,
-                        'media_files': complaint.media_files.all(),
-                    })
-            
             form.save()
 
             # Delete selected media
             media_to_delete = request.POST.getlist('delete_media')
             for media_id in media_to_delete:
-                try:
-                    media = ComplaintMedia.objects.get(id=media_id)
-                    media.file.delete()  # delete from storage
-                    media.delete()
-                except ComplaintMedia.DoesNotExist:
-                    pass
+                media = ComplaintMedia.objects.get(id=media_id)
+                media.file.delete()  # delete from storage
+                media.delete()
 
             # Save new uploaded media
             for file in request.FILES.getlist('media'):
                 ComplaintMedia.objects.create(complaint=complaint, file=file)
 
-            messages.success(request, 'Complaint updated successfully!')
             return redirect('complaint_list')
     else:
         form = ComplaintForm(instance=complaint)

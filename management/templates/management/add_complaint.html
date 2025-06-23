@@ -354,10 +354,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Date</label>
+                        <label class="form-label">{{ form.date.label }}</label>
                         <div class="date-input-wrapper">
-                            <input type="text" name="date" id="dateInput" class="date-input" 
-                                   placeholder="Select date (DD-MMM-YY)" readonly required>
+                            {{ form.date }}
                             <i class="fas fa-calendar-alt date-icon"></i>
                         </div>
                     </div>

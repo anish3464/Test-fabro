@@ -453,7 +453,7 @@
             }
 
             .table {
-                min-width: 800px;
+                min-width: 900px;
             }
 
             .modal-content {
@@ -573,7 +573,6 @@
                             <th>Year</th>
                             <th>Series</th>
                             <th>Material</th>
-                            <th>Batch/Order</th>
                             <th>Status</th>
                             <th>Media</th>
                             <th>Actions</th>
@@ -593,8 +592,7 @@
                             <td>{{ complaint.model|default:"-" }}</td>
                             <td>{{ complaint.year|default:"-" }}</td>
                             <td>{{ complaint.series|default:"-" }}</td>
-                            <td>{{ complaint.material|default:"-" }}</td>
-                            <td>{{ complaint.batch_order }}</td>                            
+                            <td>{{ complaint.material|default:"-" }}</td>                          
                             <td>
                                 <span class="status-badge status-{{ complaint.status|lower|cut:' ' }}">
                                     {{ complaint.status }}

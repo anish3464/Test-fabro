@@ -420,10 +420,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Date</label>
+                        <label class="form-label">{{ form.date.label }}</label>
                         <div class="date-input-wrapper">
-                            <input type="text" name="date_display" id="dateInput" class="date-input" 
-                                   placeholder="Select date (DD-MMM-YY)" readonly required>
+                            {{ form.date }}
                             <i class="fas fa-calendar-alt date-icon"></i>
                         </div>
                     </div>
@@ -622,70 +621,7 @@
     </div>
 
     <script>
-        // Date picker functionality
-        function initDatePicker() {
-            const dateInput = document.getElementById('dateInput');
-            
-            // Create hidden input for actual form submission
-            const hiddenDateInput = document.createElement('input');
-            hiddenDateInput.type = 'hidden';
-            hiddenDateInput.name = 'date';
-            dateInput.parentNode.appendChild(hiddenDateInput);
-            
-            // Set current complaint date
-            {% if complaint.date %}
-                const complaintDate = new Date('{{ complaint.date|date:"Y-m-d" }}');
-                dateInput.value = formatDateDisplay(complaintDate);
-                hiddenDateInput.value = '{{ complaint.date|date:"Y-m-d" }}';
-            {% else %}
-                const today = new Date();
-                dateInput.value = formatDateDisplay(today);
-                hiddenDateInput.value = formatDateForSubmission(today);
-            {% endif %}
-            
-            dateInput.addEventListener('click', function() {
-                const input = document.createElement('input');
-                input.type = 'date';
-                input.style.position = 'absolute';
-                input.style.left = '-9999px';
-                document.body.appendChild(input);
-                
-                // Set current value
-                if (hiddenDateInput.value) {
-                    input.value = hiddenDateInput.value;
-                }
-                
-                input.addEventListener('change', function() {
-                    if (this.value) {
-                        const selectedDate = new Date(this.value);
-                        dateInput.value = formatDateDisplay(selectedDate);
-                        hiddenDateInput.value = this.value;
-                    }
-                    document.body.removeChild(this);
-                });
-                
-                input.click();
-            });
-        }
-        
-        function formatDateDisplay(date) {
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = months[date.getMonth()];
-            const year = String(date.getFullYear()).slice(-2);
-            return `${day}-${month}-${year}`;
-        }
-        
-        function formatDateForSubmission(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // Dynamic form loading
-        function loadDependentData(url, targetId, emptyMessage, selectedValue = null) {
+       function loadDependentData(url, targetId, emptyMessage) {
             const targetSelect = document.getElementById(targetId);
             targetSelect.innerHTML = `<option value="">${emptyMessage}</option>`;
             targetSelect.disabled = true;
@@ -697,9 +633,6 @@
                         const option = document.createElement('option');
                         option.value = item.id;
                         option.textContent = item.name || item.range;
-                        if (selectedValue && item.id == selectedValue) {
-                            option.selected = true;
-                        }
                         targetSelect.appendChild(option);
                     });
                     targetSelect.disabled = false;
@@ -710,71 +643,30 @@
                 });
         }
 
-        // Initialize form with existing values
-        document.addEventListener('DOMContentLoaded', function() {
-            initDatePicker();
-            
-            const brandSelect = document.getElementById('id_brand');
-            const modelSelect = document.getElementById('id_model');
-            const subModelSelect = document.getElementById('id_sub_model');
-            const yearSelect = document.getElementById('id_year');
-            
-            // Get current values
-            const currentBrand = brandSelect.value;
-            const currentModel = '{{ complaint.model.id|default:"" }}';
-            const currentSubModel = '{{ complaint.sub_model.id|default:"" }}';
-            const currentYear = '{{ complaint.year.id|default:"" }}';
-            
-            // Load models if brand is selected
-            if (currentBrand) {
-                loadDependentData(`/api/models/${currentBrand}/`, 'id_model', 'Select Model', currentModel);
-                
-                // Load sub-models if model exists
-                if (currentModel) {
-                    setTimeout(() => {
-                        loadDependentData(`/api/sub_models/${currentModel}/`, 'id_sub_model', 'Select Sub-Model (Optional)', currentSubModel);
-                        
-                        // Load years if sub-model exists
-                        if (currentSubModel) {
-                            setTimeout(() => {
-                                loadDependentData(`/api/year_ranges/${currentSubModel}/`, 'id_year', 'Select Year', currentYear);
-                            }, 500);
-                        }
-                    }, 500);
-                }
+        document.getElementById('id_brand').addEventListener('change', function () {
+            const brandId = this.value;
+            if (brandId) {
+                loadDependentData(`/api/models/${brandId}/`, 'id_model', 'Select Model');
             }
-            
-            // Event listeners for dynamic loading
-            brandSelect.addEventListener('change', function () {
-                const brandId = this.value;
-                if (brandId) {
-                    loadDependentData(`/api/models/${brandId}/`, 'id_model', 'Select Model');
-                }
-                subModelSelect.disabled = true;
-                yearSelect.disabled = true;
-            });
+            document.getElementById('id_sub_model').disabled = true;
+            document.getElementById('id_year').disabled = true;
+        });
 
-            modelSelect.addEventListener('change', function () {
-                const modelId = this.value;
-                if (modelId) {
-                    loadDependentData(`/api/sub_models/${modelId}/`, 'id_sub_model', 'Select Sub-Model (Optional)');
-                }
-                yearSelect.disabled = true;
-            });
+        document.getElementById('id_model').addEventListener('change', function () {
+            const modelId = this.value;
+            if (modelId) {
+                loadDependentData(`/api/sub_models/${modelId}/`, 'id_sub_model', 'Select Sub-Model (Optional)');
+            }
+            document.getElementById('id_year').disabled = true;
+        });
 
-            subModelSelect.addEventListener('change', function () {
-                const subModelId = this.value;
-                if (subModelId) {
-                    loadDependentData(`/api/year_ranges/${subModelId}/`, 'id_year', 'Select Year');
-                }
-            });
-            
-            // Add active nav state
-            const complaintListLink = document.querySelector('a[href="{% url 'complaint_list' %}"]');
-            if (complaintListLink) {
-                complaintListLink.classList.add('active');
+        document.getElementById('id_sub_model').addEventListener('change', function () {
+            const subModelId = this.value;
+            if (subModelId) {
+                loadDependentData(`/api/year_ranges/${subModelId}/`, 'id_year', 'Select Year');
             }
         });
+
 
         // File upload handling
         const fileInput = document.querySelector('.file-input');
@@ -791,6 +683,18 @@
                 }
             });
         }
+
+         // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add active nav state
+            const complaintListLink = document.querySelector('a[href="{% url 'complaint_list' %}"]');
+            if (complaintListLink) {
+                complaintListLink.classList.add('active');
+            }
+        });
+
+
+
     </script>
 </body>
 </html>

@@ -278,7 +278,7 @@
             <p class="page-subtitle">Bulk import vehicle configurations from CSV file</p>
         </div>
 
-        {% if messages %}
+        {% comment %} {% if messages %}
             <div class="messages">
                 {% for message in messages %}
                     <div class="message {{ message.tags }}">
@@ -293,7 +293,7 @@
                     </div>
                 {% endfor %}
             </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
 
         <div class="upload-container">
             <h2 class="section-title">
