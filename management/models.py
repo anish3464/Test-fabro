@@ -45,6 +45,13 @@ class YearRange(models.Model):
 class SKU(models.Model):
     code = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=255, blank=True, null=True)
+    region = models.ForeignKey(
+        'management.MasterSetting', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        limit_choices_to={'category': 'Region'}, 
+        related_name="region"
+    )
 
     def __str__(self):
         return self.code
@@ -54,11 +61,12 @@ class MasterSetting(models.Model):
     CATEGORY_CHOICES = [
         ('Channel', 'Channel'),
         ('Country', 'Country'),
-        ('Person', 'Person'),
-        ('Case Category', 'Case Category'),
+        ('Reported By', 'Reported By'),
+        ('Category', 'Category'),
+        ('Type', 'Type'),
         ('Series', 'Series'),
         ('Material', 'Material'),
-        ('Case Sub-Category', 'Case Sub-Category'),
+        ('Region', 'Region'),
     ]
 
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
@@ -94,21 +102,21 @@ class Complaint(models.Model):
         'management.MasterSetting', 
         on_delete=models.SET_NULL, 
         null=True, 
-        limit_choices_to={'category': 'Person'}, 
+        limit_choices_to={'category': 'Reported By'}, 
         related_name="complaints_as_person"
     )
     case_category = models.ForeignKey(
         'management.MasterSetting', 
         on_delete=models.SET_NULL, 
         null=True, 
-        limit_choices_to={'category': 'Case Category'}, 
+        limit_choices_to={'category': 'Category'}, 
         related_name="complaints_as_case_category"
     )
     case_sub_category = models.ForeignKey(
         'management.MasterSetting',
         on_delete=models.SET_NULL,
         null=True,
-        limit_choices_to={'category': 'Case Sub-Category'},
+        limit_choices_to={'category': 'Type'},
         related_name="complaints_as_case_sub_category"
     )
     series = models.ForeignKey(
