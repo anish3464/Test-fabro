@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.utils.dateparse import parse_date
 from collections import Counter
 from django.db.models import Count
+from datetime import datetime
 
 @login_required
 def index(request):
@@ -85,6 +86,7 @@ def add_car_details(request):
                     number_of_doors=number_of_doors,
                     layout_code=layout_code
                 )
+                messages.success(request, 'Vehicle added successfully!')
                 return redirect('add_car_details')
     else:
         form = CarDetailsForm()
@@ -143,6 +145,7 @@ def car_details(request):
 def delete_car_detail(request, year_range_id):
     year_range = get_object_or_404(YearRange, id=year_range_id)
     year_range.delete()
+    messages.success(request, 'Vehicle deleted successfully!')
     return redirect('add_car_details')
 
 @login_required
@@ -173,6 +176,14 @@ def edit_car_detail(request, car_id):
             number_of_seats = form.cleaned_data["number_of_seats"]
             number_of_doors = form.cleaned_data["number_of_doors"]
 
+            # Check for layout code duplication (excluding current record)
+            if YearRange.objects.filter(layout_code=layout_code).exclude(id=car_id).exists():
+                messages.error(request, 'Layout code already exists. Please use a unique layout code.')
+                return render(request, 'management/edit_car_detail.html', {
+                    'form': form,
+                    'car_id': car_id,
+                })
+
             brand, _ = Brand.objects.get_or_create(name=brand_name)
             model, _ = Model.objects.get_or_create(brand=brand, name=model_name)
 
@@ -189,6 +200,7 @@ def edit_car_detail(request, car_id):
             year_range.layout_code = layout_code
             year_range.save()
 
+            messages.success(request, 'Vehicle updated successfully!')
             return redirect('add_car_details')
     else:
         form = CarDetailsForm(initial=initial_data)
@@ -236,6 +248,17 @@ def add_complaint(request):
     if request.method == 'POST':
         form = ComplaintForm(request.POST)
         if form.is_valid():
+            # Handle date conversion
+            date_str = request.POST.get('date')
+            if date_str:
+                try:
+                    # Convert from YYYY-MM-DD format to date object
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    form.instance.date = date_obj
+                except ValueError:
+                    messages.error(request, 'Invalid date format.')
+                    return render(request, 'management/add_complaint.html', {'form': form})
+            
             complaint = form.save()
 
             # Save each uploaded file
@@ -245,6 +268,7 @@ def add_complaint(request):
                     file=uploaded_file
                 )
 
+            messages.success(request, 'Complaint added successfully!')
             return redirect('complaint_list')
     else:
         form = ComplaintForm()
@@ -370,19 +394,38 @@ def edit_complaint(request, complaint_id):
     if request.method == 'POST':
         form = ComplaintForm(request.POST, request.FILES, instance=complaint)
         if form.is_valid():
+            # Handle date conversion
+            date_str = request.POST.get('date')
+            if date_str:
+                try:
+                    # Convert from YYYY-MM-DD format to date object
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+                    form.instance.date = date_obj
+                except ValueError:
+                    messages.error(request, 'Invalid date format.')
+                    return render(request, 'management/edit_complaint.html', {
+                        'form': form,
+                        'complaint': complaint,
+                        'media_files': complaint.media_files.all(),
+                    })
+            
             form.save()
 
             # Delete selected media
             media_to_delete = request.POST.getlist('delete_media')
             for media_id in media_to_delete:
-                media = ComplaintMedia.objects.get(id=media_id)
-                media.file.delete()  # delete from storage
-                media.delete()
+                try:
+                    media = ComplaintMedia.objects.get(id=media_id)
+                    media.file.delete()  # delete from storage
+                    media.delete()
+                except ComplaintMedia.DoesNotExist:
+                    pass
 
             # Save new uploaded media
             for file in request.FILES.getlist('media'):
                 ComplaintMedia.objects.create(complaint=complaint, file=file)
 
+            messages.success(request, 'Complaint updated successfully!')
             return redirect('complaint_list')
     else:
         form = ComplaintForm(instance=complaint)
@@ -397,6 +440,7 @@ def edit_complaint(request, complaint_id):
 def delete_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, pk=complaint_id)
     complaint.delete()
+    messages.success(request, 'Complaint deleted successfully!')
     return redirect('complaint_list')
 
 

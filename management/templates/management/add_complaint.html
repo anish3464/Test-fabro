@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Complaint - Fabro Leather</title>
+    <link rel="icon" type="image/png" href="/static/FABRO__BRAND ICON_FINAL_CMYK.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .page-container {
@@ -127,6 +128,47 @@
         .form-textarea {
             resize: vertical;
             min-height: 100px;
+        }
+
+        .date-input-wrapper {
+            position: relative;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.light-mode .date-input {
+            background-color: var(--light-surface);
+            color: var(--light-text);
+            border-color: #e2e8f0;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .date-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-text-secondary);
+            pointer-events: none;
+        }
+
+        body.light-mode .date-icon {
+            color: var(--light-text-secondary);
         }
 
         .file-upload-area {
@@ -312,8 +354,12 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">{{ form.date.label }}</label>
-                        {{ form.date }}
+                        <label class="form-label">Date</label>
+                        <div class="date-input-wrapper">
+                            <input type="text" name="date" id="dateInput" class="date-input" 
+                                   placeholder="Select date (DD-MMM-YY)" readonly required>
+                            <i class="fas fa-calendar-alt date-icon"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -481,6 +527,65 @@
     </div>
 
     <script>
+        // Date picker functionality
+        function initDatePicker() {
+            const dateInput = document.getElementById('dateInput');
+            
+            // Create hidden input for actual form submission
+            const hiddenDateInput = document.createElement('input');
+            hiddenDateInput.type = 'hidden';
+            hiddenDateInput.name = 'date';
+            dateInput.parentNode.appendChild(hiddenDateInput);
+            
+            // Set today's date as default
+            const today = new Date();
+            const formattedDate = formatDateDisplay(today);
+            dateInput.value = formattedDate;
+            hiddenDateInput.value = formatDateForSubmission(today);
+            
+            dateInput.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'date';
+                input.style.position = 'absolute';
+                input.style.left = '-9999px';
+                document.body.appendChild(input);
+                
+                // Set current value
+                if (hiddenDateInput.value) {
+                    input.value = hiddenDateInput.value;
+                } else {
+                    input.value = formatDateForSubmission(today);
+                }
+                
+                input.addEventListener('change', function() {
+                    if (this.value) {
+                        const selectedDate = new Date(this.value);
+                        dateInput.value = formatDateDisplay(selectedDate);
+                        hiddenDateInput.value = this.value;
+                    }
+                    document.body.removeChild(this);
+                });
+                
+                input.click();
+            });
+        }
+        
+        function formatDateDisplay(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = months[date.getMonth()];
+            const year = String(date.getFullYear()).slice(-2);
+            return `${day}-${month}-${year}`;
+        }
+        
+        function formatDateForSubmission(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         // Dynamic form loading
         function loadDependentData(url, targetId, emptyMessage) {
             const targetSelect = document.getElementById(targetId);
@@ -547,8 +652,11 @@
             document.getElementById('loadingOverlay').style.display = 'flex';
         });
 
-        // Add active nav state
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            initDatePicker();
+            
+            // Add active nav state
             const addComplaintLink = document.querySelector('a[href="{% url 'add_complaint' %}"]');
             if (addComplaintLink) {
                 addComplaintLink.classList.add('active');
