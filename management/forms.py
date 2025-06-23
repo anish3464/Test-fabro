@@ -55,7 +55,7 @@ class ComplaintForm(forms.ModelForm):
         model = Complaint
         fields = [
             'complaint_id','date', 'channel', 'country', 'person', 'case_category','case_sub_category', 'series', 'material', 
-            'brand', 'model', 'sub_model', 'year', 'status', 'sku', 
+            'brand', 'model', 'sub_model', 'year', 'status','priority','sku', 
             'complaint_description', 'batch_order', 
             'justification_from_factory', 'action_from_factory'
         ]
@@ -74,6 +74,7 @@ class ComplaintForm(forms.ModelForm):
             'sub_model': forms.Select(attrs={'class': 'form-select'}),
             'year': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
+            'priority': forms.Select(attrs={'class': 'form-select'}),
             'sku': forms.Select(attrs={'class': 'form-select'}),
             'complaint_description': forms.Textarea(attrs={'rows': 3, 'class': 'form-textarea'}),
             'batch_order': forms.TextInput(attrs={'class': 'form-input'}),

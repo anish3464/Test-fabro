@@ -133,6 +133,7 @@ class Complaint(models.Model):
     sub_model = models.ForeignKey('management.SubModel', on_delete=models.SET_NULL, null=True, blank=True)
     year = models.ForeignKey('management.YearRange', on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=[('Open', 'Open'), ('Closed', 'Closed'), ('On Hold', 'On Hold')], default='Open')
+    priority = models.CharField(max_length=10, choices=[('High', 'High'), ('Medium', 'Medium'), ('Low', 'Low')], default='Medium')
     complaint_description = models.TextField(default="Not Provided")
     batch_order = models.CharField(max_length=100)
     justification_from_factory = models.TextField(blank=True, null=True, default="Not Provided")

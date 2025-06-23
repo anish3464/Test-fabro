@@ -287,6 +287,7 @@ def complaint_list(request):
     selected_brand = request.GET.get('brand')
     selected_country = request.GET.get('country')
     selected_status = request.GET.get('status')
+    selected_priority = request.GET.get('priority')
     selected_channel = request.GET.get('channel')
     selected_person = request.GET.get('person')
     selected_case_category = request.GET.get('case_category')
@@ -300,6 +301,8 @@ def complaint_list(request):
         complaints = complaints.filter(**filter_kwargs)
     if selected_status:
         complaints = complaints.filter(status=selected_status)
+    if selected_priority:
+        complaints = complaints.filter(priority=selected_priority)
     if selected_channel:
         complaints = complaints.filter(channel=selected_channel)
     if selected_person:
@@ -330,6 +333,7 @@ def complaint_list(request):
     case_sub_categories = MasterSetting.objects.filter(id__in=Complaint.objects.values_list('case_sub_category', flat=True).distinct())
     persons = MasterSetting.objects.filter(id__in=Complaint.objects.values_list('person', flat=True).distinct())
     statuses = Complaint.objects.values_list('status', flat=True).distinct()
+    priorities = Complaint.objects.values_list('priority', flat=True).distinct()
     sku = Complaint.objects.values_list('sku__code', flat=True).distinct()
 
     # Status Pie Data
@@ -354,10 +358,10 @@ def complaint_list(request):
         'selected_case_sub_category': selected_case_sub_category,
         'selected_brand': selected_brand,
         'selected_country': selected_country,
-        'selected_status': selected_status,
         'selected_channel': selected_channel,
         'selected_person': selected_person,
         'selected_status': selected_status,
+        'selected_priority': selected_priority,
         'from_date': from_date,
         'to_date': to_date,
         'brands': brands,
@@ -367,6 +371,7 @@ def complaint_list(request):
         'case_sub_categories': case_sub_categories,
         'persons': persons,
         'statuses': statuses,
+        'priorities': priorities,
         'sku': sku
     })
 

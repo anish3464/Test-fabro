@@ -539,6 +539,13 @@
                         {% endfor %}
                     </select>
 
+                    <select name="priority" class="filter-select">
+                        <option value="">All Priorities</option>
+                        {% for priority in priorities %}
+                            <option value="{{ priority }}" {% if selected_priority == priority %}selected{% endif %}>{{ priority }}</option>
+                        {% endfor %}
+                    </select>
+
                     <input type="date" name="from_date" value="{{ from_date }}" class="filter-input">
                     <input type="date" name="to_date" value="{{ to_date }}" class="filter-input">
                 </div>
@@ -574,6 +581,7 @@
                             <th>Series</th>
                             <th>Material</th>
                             <th>Status</th>
+                            <th>Priority</th>
                             <th>Media</th>
                             <th>Actions</th>
                         </tr>
@@ -596,6 +604,11 @@
                             <td>
                                 <span class="status-badge status-{{ complaint.status|lower|cut:' ' }}">
                                     {{ complaint.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ complaint.priority|lower|cut:' ' }}">
+                                    {{ complaint.priority }}
                                 </span>
                             </td>
                             <td>
@@ -639,6 +652,14 @@
                                             <div class="detail-value">
                                                 <span class="status-badge status-{{ complaint.status|lower|cut:' ' }}">
                                                     {{ complaint.status }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Priority</div>
+                                            <div class="detail-value">
+                                                <span class="status-badge status-{{ complaint.priority|lower|cut:' ' }}">
+                                                    {{ complaint.priority }}
                                                 </span>
                                             </div>
                                         </div>
