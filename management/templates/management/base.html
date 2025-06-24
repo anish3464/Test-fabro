@@ -198,6 +198,22 @@
         body.light-mode .dropdown-header {
             border-bottom-color: #e2e8f0;
         }
+        .alert {
+            padding: 10px;
+            margin: 10px auto;
+            border-radius: 5px;
+            max-width: 600px;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+        .alert.error {
+            background-color: #ff4f4f;
+            color: white;
+        }
+        .alert.success {
+            background-color: #4caf50;
+            color: white;
+        }
 
         .dropdown-item {
             display: flex;
@@ -409,9 +425,26 @@
 
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', initTheme);
+
+        setTimeout(function() {
+            const flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+            flashMessages.style.transition = 'opacity 0.5s ease';
+            flashMessages.style.opacity = '0';
+            setTimeout(() => flashMessages.remove(), 500);  // fully remove after fade
+            }
+        }, 6000);
     </script>
 </head>
 <body>
+        {% if messages %}
+        <div class="messages" id="flash-messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <nav class="navbar">
         <a href="{% url 'index' %}" class="nav-brand">
             <i class="fas fa-car-side"></i>

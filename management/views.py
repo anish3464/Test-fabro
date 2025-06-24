@@ -215,9 +215,14 @@ def edit_car_detail(request, car_id):
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import MasterSetting
 from .forms import MasterSettingForm
+from django.contrib.auth.decorators import user_passes_test
 
 @login_required
 def master_settings(request):
+    if not request.user.is_superuser:
+        messages.error(request, "This page is restricted to administrators only.")
+        return redirect('index')
+    
     if request.method == "POST":
         form = MasterSettingForm(request.POST)
         if form.is_valid():
