@@ -138,6 +138,8 @@ class Complaint(models.Model):
     batch_order = models.CharField(max_length=100)
     justification_from_factory = models.TextField(blank=True, null=True, default="Not Provided")
     action_from_factory = models.TextField(blank=True, null=True,  default="Not Provided")
+    cad_date = models.DateField(auto_now_add=False, null=True, blank=True)
+    updated_order_no = models.CharField(max_length=100, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)    

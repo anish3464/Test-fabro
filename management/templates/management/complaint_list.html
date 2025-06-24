@@ -707,7 +707,16 @@
                                             <div class="detail-label">Material</div>
                                             <div class="detail-value">{{ complaint.material|default:"-" }}</div>
                                         </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Updated Order #</div>
+                                            <div class="detail-value">{{ complaint.updated_order_no }}</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">CAD Date</div>
+                                            <div class="detail-value">{{ complaint.cad_date }}</div>
+                                        </div>
                                     </div>
+
 
                                     <div class="detail-item" style="margin-bottom: 1rem;">
                                         <div class="detail-label">Description</div>

@@ -356,8 +356,8 @@
                     <div class="form-group">
                         <label class="form-label">{{ form.date.label }}</label>
                         <div class="date-input-wrapper">
-                            {{ form.date }}
-                            <i class="fas fa-calendar-alt date-icon"></i>
+                            <div class="date-input">{{ form.date }}
+                            <i class="fas fa-calendar-alt date-icon"></i></div>
                         </div>
                     </div>
 
@@ -421,6 +421,11 @@
                         <label class="form-label">{{ form.material.label }}</label>
                         {{ form.material }}
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Update Order # </label>
+                        {{ form.updated_order_no }}
+                    </div>
                 </div>
 
                 <!-- Vehicle Information -->
@@ -478,6 +483,14 @@
                 <div class="form-group">
                     <label class="form-label">{{ form.batch_order.label }}</label>
                     {{ form.batch_order }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">CAD Date</label>
+                    <div class="date-input-wrapper">
+                    <div class="date-input">{{ form.cad_date }}
+                            <i class="fas fa-calendar-alt date-icon"></i></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
