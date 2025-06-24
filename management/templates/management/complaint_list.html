@@ -574,7 +574,7 @@
                             <th>Country</th>
                             <th>Category</th>
                             <th>Type</th>
-                            <th>Person</th>
+                            <th>Reported By</th>
                             <th>Brand</th>
                             <th>Model</th>
                             <th>Year</th>
@@ -656,6 +656,10 @@
                                             </div>
                                         </div>
                                         <div class="detail-item">
+                                            <div class="detail-label">Channel</div>
+                                            <div class="detail-value">{{ complaint.channel|default:"-" }}</div>
+                                        </div>
+                                        <div class="detail-item">
                                             <div class="detail-label">Priority</div>
                                             <div class="detail-value">
                                                 <span class="status-badge status-{{ complaint.priority|lower|cut:' ' }}">
@@ -664,15 +668,11 @@
                                             </div>
                                         </div>
                                         <div class="detail-item">
-                                            <div class="detail-label">Channel</div>
-                                            <div class="detail-value">{{ complaint.channel|default:"-" }}</div>
-                                        </div>
-                                        <div class="detail-item">
                                             <div class="detail-label">Country</div>
                                             <div class="detail-value">{{ complaint.country|default:"-" }}</div>
                                         </div>
                                         <div class="detail-item">
-                                            <div class="detail-label">Person</div>
+                                            <div class="detail-label">Reported By</div>
                                             <div class="detail-value">{{ complaint.person|default:"-" }}</div>
                                         </div>
                                         <div class="detail-item">
@@ -680,7 +680,7 @@
                                             <div class="detail-value">{{ complaint.case_category|default:"-" }}</div>
                                         </div>
                                         <div class="detail-item">
-                                            <div class="detail-label">Sub-Category</div>
+                                            <div class="detail-label">Type</div>
                                             <div class="detail-value">{{ complaint.case_sub_category|default:"-" }}</div>
                                         </div>
                                         <div class="detail-item">
@@ -692,9 +692,13 @@
                                             <div class="detail-value">{{ complaint.model|default:"-" }}</div>
                                         </div>
                                         <div class="detail-item">
+                                            <div class="detail-label">Sub-Model</div>
+                                            <div class="detail-value">{{ complaint.sub_model|default:"-" }}</div>
+                                        </div>
+                                        <div class="detail-item">
                                             <div class="detail-label">Year</div>
                                             <div class="detail-value">{{ complaint.year|default:"-" }}</div>
-                                        </div>
+                                        </div>                    
                                         <div class="detail-item">
                                             <div class="detail-label">Series</div>
                                             <div class="detail-value">{{ complaint.series|default:"-" }}</div>
@@ -716,12 +720,12 @@
                                     </div>
 
                                     <div class="detail-item" style="margin-bottom: 1rem;">
-                                        <div class="detail-label">Factory Justification</div>
+                                        <div class="detail-label">Reason</div>
                                         <div class="detail-value">{{ complaint.justification_from_factory }}</div>
                                     </div>
 
                                     <div class="detail-item" style="margin-bottom: 1rem;">
-                                        <div class="detail-label">Factory Action</div>
+                                        <div class="detail-label">Resolution</div>
                                         <div class="detail-value">{{ complaint.action_from_factory }}</div>
                                     </div>
 

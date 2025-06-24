@@ -475,8 +475,8 @@
                                     <th>Layout Code</th>
                                     <th>Brand</th>
                                     <th>Model</th>
-                                    <th>Sub-Model</th>
                                     <th>Year Range</th>
+                                    <th>Sub-Model</th>
                                     <th>Seats</th>
                                     <th>Doors</th>
                                     <th>Actions</th>
@@ -489,8 +489,8 @@
                                         <td><strong>{{ car.layout_code }}</strong></td>
                                         <td>{{ car.brand }}</td>
                                         <td>{{ car.model }}</td>
-                                        <td>{{ car.sub_model|default:"-" }}</td>
                                         <td>{{ car.year_start }} - {{ car.year_end }}</td>
+                                        <td>{{ car.sub_model|default:"-" }}</td>
                                         <td>{{ car.seats }}</td>
                                         <td>{{ car.doors }}</td>
                                         <td>
