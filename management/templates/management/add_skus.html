@@ -491,6 +491,7 @@
                                 <th>#</th>
                                 <th>SKU</th>
                                 <th>Description</th>
+                                <th>Region</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -500,6 +501,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td><strong>{{ sku.code }}</strong></td>
                                 <td>{{ sku.description|default:"-" }}</td>
+                                <td>{{ sku.region|default:"-" }}</td>
                                 <td>
                                     <div class="action-buttons">
                                         <a href="{% url 'edit_sku' sku.id %}" class="action-btn edit" title="Edit">
