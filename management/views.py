@@ -242,6 +242,23 @@ def master_settings(request):
     })
 
 @login_required
+def edit_master_setting(request, setting_id):
+    setting = get_object_or_404(MasterSetting, id=setting_id)
+
+    if request.method == 'POST':
+        form = MasterSettingForm(request.POST, instance=setting)
+        if form.is_valid():
+            form.save()
+            return redirect('master_settings')
+    else:
+        form = MasterSettingForm(instance=setting)
+
+    return render(request, 'management/edit_master_setting.html', {
+        'form': form,
+        'setting': setting
+    })
+
+@login_required
 def delete_master_setting(request, setting_id):
     setting = get_object_or_404(MasterSetting, id=setting_id)
     setting.delete()
@@ -572,7 +589,6 @@ def add_sku(request):
                     added += 1
 
                 upload_feedback = f"{added} SKUs added. {skipped} duplicates skipped."
-
 
     return render(request, 'management/add_skus.html', {
         'form': form,

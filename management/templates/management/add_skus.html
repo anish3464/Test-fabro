@@ -361,6 +361,90 @@
             opacity: 0.5;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--dark-surface);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .modal-content {
+            background: var(--light-surface);
+            border-color: #e2e8f0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .modal-header {
+            border-bottom-color: #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--error-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .close-btn {
+            color: var(--light-text-secondary);
+        }
+
+        .close-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        .modal-body {
+            color: var(--dark-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        body.light-mode .modal-body {
+            color: var(--light-text-secondary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
         @media (max-width: 1024px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -409,7 +493,7 @@
                     Add New SKU
                 </h2>
 
-                <form method="post">
+                <form method="post" id="skuForm">
                     {% csrf_token %}
                     
                     <div class="form-group">
@@ -531,6 +615,30 @@
         </div>
     </div>
 
+    <!-- Duplicate SKU Modal -->
+    <div id="duplicateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Duplicate SKU Found
+                </h2>
+                <button class="close-btn" onclick="closeDuplicateModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>The SKU code or description you entered already exists. Please use unique values.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeDuplicateModal()">
+                    <i class="fas fa-check"></i>
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function() {
@@ -563,6 +671,28 @@
                         `<strong>${files[0].name}</strong><br>Ready to upload`;
                 }
             });
+        }
+
+        // Form validation and duplicate checking
+        document.getElementById('skuForm').addEventListener('submit', function(e) {
+            // This will be handled by Django form validation
+            // If there are errors, they will be displayed in the form
+        });
+
+        function closeDuplicateModal() {
+            document.getElementById('duplicateModal').style.display = 'none';
+        }
+
+        // Show duplicate modal if form has errors
+        {% if form.errors %}
+            document.getElementById('duplicateModal').style.display = 'block';
+        {% endif %}
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
         }
 
         // Initialize

@@ -257,13 +257,17 @@
             color: var(--light-text-secondary);
         }
 
-        .delete-btn {
+        .setting-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
             padding: 0.5rem;
             border-radius: 6px;
             border: none;
             cursor: pointer;
             transition: all 0.2s ease;
-            background-color: var(--error-color);
             color: white;
             font-size: 0.75rem;
             display: flex;
@@ -271,11 +275,20 @@
             justify-content: center;
             width: 2rem;
             height: 2rem;
+            text-decoration: none;
         }
 
-        .delete-btn:hover {
+        .action-btn.edit {
+            background-color: var(--warning-color);
+        }
+
+        .action-btn.delete {
+            background-color: var(--error-color);
+        }
+
+        .action-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .empty-state {
@@ -287,6 +300,107 @@
 
         body.light-mode .empty-state {
             color: var(--light-text-secondary);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--dark-surface);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .modal-content {
+            background: var(--light-surface);
+            border-color: #e2e8f0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .modal-header {
+            border-bottom-color: #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        body.light-mode .modal-title {
+            color: var(--light-text);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .close-btn {
+            color: var(--light-text-secondary);
+        }
+
+        .close-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: var(--dark-card);
+            color: var(--dark-text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .btn-secondary {
+            background: var(--light-card);
+            color: var(--light-text-secondary);
+            border-color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark-surface);
+            color: var(--dark-text);
+        }
+
+        body.light-mode .btn-secondary:hover {
+            background: var(--light-surface);
+            color: var(--light-text);
         }
 
         @media (max-width: 1024px) {
@@ -371,11 +485,11 @@
                                         <div class="category-icon icon-country">
                                             <i class="fas fa-globe"></i>
                                         </div>
-                                    {% elif category == "Person" %}
+                                    {% elif category == "Reported By" %}
                                         <div class="category-icon icon-person">
                                             <i class="fas fa-user"></i>
                                         </div>
-                                    {% elif category == "Case Category" or category == "Case Sub-Category" %}
+                                    {% elif category == "Category" or category == "Type" %}
                                         <div class="category-icon icon-case">
                                             <i class="fas fa-folder"></i>
                                         </div>
@@ -401,12 +515,19 @@
                                 {% for setting in settings %}
                                     <div class="setting-item">
                                         <span class="setting-name">{{ setting.name }}</span>
-                                        <a href="{% url 'delete_master_setting' setting.id %}" 
-                                           class="delete-btn" 
-                                           title="Delete {{ setting.name }}"
-                                           onclick="return confirm('Are you sure you want to delete &quot;{{ setting.name }}&quot;?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <div class="setting-actions">
+                                            <button class="action-btn edit" 
+                                                    onclick="openEditModal('{{ setting.id }}', '{{ setting.category }}', '{{ setting.name }}')" 
+                                                    title="Edit {{ setting.name }}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <a href="{% url 'delete_master_setting' setting.id %}" 
+                                               class="action-btn delete" 
+                                               title="Delete {{ setting.name }}"
+                                               onclick="return confirm('Are you sure you want to delete "{{ setting.name }}"?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 {% empty %}
                                     <div class="empty-state">
@@ -421,7 +542,70 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Master Setting</h2>
+                <button class="close-btn" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form method="POST" action="" id="editForm">
+                {% csrf_token %}
+                <input type="hidden" name="edit_setting" value="1">
+                
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" id="editCategory" class="form-select" required>
+                        {% for choice in form.category.field.choices %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" id="editName" class="form-input" required>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update Setting
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // Edit Modal Functions
+        function openEditModal(settingId, category, name) {
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editName').value = name;
+            document.getElementById('editForm').action = `/edit-master-setting/${settingId}/`;
+            document.getElementById('editModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+                document.body.style.overflow = 'auto';
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Add active nav state
@@ -445,7 +629,7 @@
 
         // Show success message if setting was added
         {% if request.method == "POST" and not form.errors %}
-            showToast('Setting added successfully!', 'success');
+            showToast('Setting updated successfully!', 'success');
         {% endif %}
     </script>
 </body>

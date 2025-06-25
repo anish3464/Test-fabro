@@ -598,7 +598,7 @@
                             <td>{{ complaint.person.name|default:"-" }}</td>
                             <td>{{ complaint.brand|default:"-" }}</td>
                             <td>{{ complaint.model|default:"-" }}</td>
-                            <td>{{ complaint.year|default:"-" }}</td>
+                            <td>{{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}</td>
                             <td>{{ complaint.series|default:"-" }}</td>
                             <td>{{ complaint.material|default:"-" }}</td>                          
                             <td>
@@ -697,7 +697,7 @@
                                         </div>
                                         <div class="detail-item">
                                             <div class="detail-label">Year</div>
-                                            <div class="detail-value">{{ complaint.year|default:"-" }}</div>
+                                            <div class="detail-value">{{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}</div>
                                         </div>                    
                                         <div class="detail-item">
                                             <div class="detail-label">Series</div>
