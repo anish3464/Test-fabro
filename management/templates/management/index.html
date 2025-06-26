@@ -459,49 +459,6 @@
             </div>
             {% endif %}
         </div>
-
-        <div class="recent-activity">
-            <div class="activity-header">
-                <h2 class="activity-title">Recent Activity</h2>
-                <a href="{% url 'complaint_list' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">
-                    View All <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-
-            {% if recent_activities %}
-                {% for activity in recent_activities %}
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        {% if activity.action == 'CREATE' %}
-                            <i class="fas fa-plus"></i>
-                        {% elif activity.action == 'UPDATE' %}
-                            <i class="fas fa-edit"></i>
-                        {% elif activity.action == 'DELETE' %}
-                            <i class="fas fa-trash"></i>
-                        {% elif activity.action == 'LOGIN' %}
-                            <i class="fas fa-sign-in-alt"></i>
-                        {% else %}
-                            <i class="fas fa-activity"></i>
-                        {% endif %}
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-text">
-                            {{ activity.get_action_display }} {{ activity.get_object_type_display|lower }} - {{ activity.object_name }}
-                        </div>
-                        <div class="activity-time">
-                            {{ activity.timestamp|timesince }} ago
-                            <span class="activity-user">by {{ activity.user.username }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-activity">
-                    <i class="fas fa-clock" style="font-size: 2rem; opacity: 0.5; margin-bottom: 0.5rem; display: block;"></i>
-                    <p>No recent activity to display</p>
-                </div>
-            {% endif %}
-        </div>
     </div>
 
     <script>
