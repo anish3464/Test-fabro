@@ -88,6 +88,7 @@
             height: 3rem;
             border-radius: 12px;
             display: flex;
+            
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
@@ -295,6 +296,22 @@
             color: var(--light-text-secondary);
         }
 
+        .activity-user {
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .empty-activity {
+            text-align: center;
+            padding: 2rem;
+            color: var(--dark-text-secondary);
+        }
+
+        body.light-mode .empty-activity {
+            color: var(--light-text-secondary);
+        }
+
         @media (max-width: 768px) {
             .dashboard-container {
                 padding: 1rem;
@@ -428,17 +445,19 @@
                 </div>
             </div>
 
-            <div class="action-card" onclick="window.location.href='{% url 'car_details' %}'">
+            {% if user.is_superuser %}
+            <div class="action-card" onclick="window.location.href='{% url 'admin_panel' %}'">
                 <div class="action-header">
                     <div class="action-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-users-cog"></i>
                     </div>
                     <div class="action-content">
-                        <h3>Vehicle Database</h3>
-                        <p>Browse and search through the complete vehicle configuration database</p>
+                        <h3>Admin Panel</h3>
+                        <p>Manage users, groups, permissions and view system activity logs</p>
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
 
         <div class="recent-activity">
@@ -449,35 +468,39 @@
                 </a>
             </div>
 
-            {% comment %} <div class="activity-item">
-                <div class="activity-icon">
-                    <i class="fas fa-plus"></i>
+            {% if recent_activities %}
+                {% for activity in recent_activities %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity.action == 'CREATE' %}
+                            <i class="fas fa-plus"></i>
+                        {% elif activity.action == 'UPDATE' %}
+                            <i class="fas fa-edit"></i>
+                        {% elif activity.action == 'DELETE' %}
+                            <i class="fas fa-trash"></i>
+                        {% elif activity.action == 'LOGIN' %}
+                            <i class="fas fa-sign-in-alt"></i>
+                        {% else %}
+                            <i class="fas fa-activity"></i>
+                        {% endif %}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">
+                            {{ activity.get_action_display }} {{ activity.get_object_type_display|lower }} - {{ activity.object_name }}
+                        </div>
+                        <div class="activity-time">
+                            {{ activity.timestamp|timesince }} ago
+                            <span class="activity-user">by {{ activity.user.username }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="activity-content">
-                    <div class="activity-text">New complaint registered for BMW X5</div>
-                    <div class="activity-time">2 hours ago</div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-activity">
+                    <i class="fas fa-clock" style="font-size: 2rem; opacity: 0.5; margin-bottom: 0.5rem; display: block;"></i>
+                    <p>No recent activity to display</p>
                 </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-text">Vehicle configuration updated</div>
-                    <div class="activity-time">4 hours ago</div>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-text">Complaint #ABC123 resolved</div>
-                    <div class="activity-time">1 day ago</div>
-                </div>
-            </div> {% endcomment %}
+            {% endif %}
         </div>
     </div>
 

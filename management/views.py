@@ -13,6 +13,13 @@ from django.utils.dateparse import parse_date
 from collections import Counter
 from django.db.models import Count
 from datetime import datetime
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.sessions.models import Session
+from django.utils.timezone import now
+from .forms import UserCreationForm, GroupCreationForm, AssignUserToGroupForm
+from .models import ActivityLog  # assuming you already created this
+from django.contrib.auth.models import User, Group
 
 @login_required
 def index(request):
@@ -86,6 +93,12 @@ def add_car_details(request):
                     number_of_doors=number_of_doors,
                     layout_code=layout_code
                 )
+                ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="Car",
+                object_name= f"{brand_name} {model_name} {sub_model_name} ({year_start}-{year_end})"
+                )
                 messages.success(request, 'Vehicle added successfully!')
                 return redirect('add_car_details')
     else:
@@ -144,8 +157,14 @@ def car_details(request):
 @login_required
 def delete_car_detail(request, year_range_id):
     year_range = get_object_or_404(YearRange, id=year_range_id)
-    year_range.delete()
     messages.success(request, 'Vehicle deleted successfully!')
+    ActivityLog.objects.create(
+        user=request.user,
+        action="deleted",
+        object_type="Car",
+        object_name=f"{year_range.sub_model.model.brand.name} {year_range.sub_model.model.name} {year_range.sub_model.name} ({year_range.year_start}-{year_range.year_end})"
+    )
+    year_range.delete()
     return redirect('add_car_details')
 
 @login_required
@@ -201,7 +220,13 @@ def edit_car_detail(request, car_id):
             year_range.save()
 
             messages.success(request, 'Vehicle updated successfully!')
-            return redirect('add_car_details')
+            ActivityLog.objects.create(
+                user=request.user,
+                action="updated",
+                object_type="Car",
+                object_name=f"{brand_name} {model_name} {sub_model_name} ({year_start}-{year_end})"
+            )
+            return redirect('car_details')
     else:
         form = CarDetailsForm(initial=initial_data)
 
@@ -226,7 +251,13 @@ def master_settings(request):
     if request.method == "POST":
         form = MasterSettingForm(request.POST)
         if form.is_valid():
-            form.save()
+            mas=form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="Master Setting",
+                object_name=mas.category + " - " + mas.name
+            )
             return redirect('master_settings')
     else:
         form = MasterSettingForm()
@@ -249,6 +280,12 @@ def edit_master_setting(request, setting_id):
         form = MasterSettingForm(request.POST, instance=setting)
         if form.is_valid():
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="updated",
+                object_type="Master Setting",
+                object_name=setting.category + " - " + setting.name
+            )
             return redirect('master_settings')
     else:
         form = MasterSettingForm(instance=setting)
@@ -257,10 +294,15 @@ def edit_master_setting(request, setting_id):
         'form': form,
         'setting': setting
     })
-
 @login_required
 def delete_master_setting(request, setting_id):
     setting = get_object_or_404(MasterSetting, id=setting_id)
+    ActivityLog.objects.create(
+        user=request.user,
+        action="deleted",
+        object_type="Master Setting",
+        object_name=setting.category + " - " + setting.name
+    )
     setting.delete()
     return redirect('master_settings')
 
@@ -278,7 +320,12 @@ def add_complaint(request):
                     complaint=complaint,
                     file=uploaded_file
                 )
-
+            
+            ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="complaint",
+                object_name= complaint.complaint_id)
             return redirect('complaint_list')
     else:
         form = ComplaintForm()
@@ -422,6 +469,12 @@ def edit_complaint(request, complaint_id):
             for file in request.FILES.getlist('media'):
                 ComplaintMedia.objects.create(complaint=complaint, file=file)
 
+            ActivityLog.objects.create(
+                user=request.user,
+                action="updated",
+                object_type="complaint",
+                object_name=complaint_id)
+            
             return redirect('complaint_list')
     else:
         form = ComplaintForm(instance=complaint)
@@ -437,6 +490,11 @@ def delete_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, pk=complaint_id)
     complaint.delete()
     messages.success(request, 'Complaint deleted successfully!')
+    ActivityLog.objects.create(
+                user=request.user,
+                action="deleted",
+                object_type="complaint",
+                object_name=complaint_id)
     return redirect('complaint_list')
 
 
@@ -532,6 +590,13 @@ def upload_car_csv(request):
             if duplicates:
                 messages.warning(request, f"Skipped {len(duplicates)} duplicate layout codes: {', '.join(duplicates)}")
             messages.success(request, f"Successfully added {len(new_entries)} records.")
+
+            ActivityLog.objects.create(
+                user=request.user,
+                action="uploaded",
+                object_type="Car CSV",
+                object_name=f"Uploaded {len(new_entries)} new car records via CSV file"
+            )
             return redirect("upload_car_csv")
     else:
         form = UploadCSVForm()
@@ -542,7 +607,7 @@ from .forms import SKUForm
 from .models import SKU
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from .models import SKU
+from .models import SKU, ActivityLog
 from .forms import SKUForm, SKUUploadForm
 
 def add_sku(request):
@@ -554,7 +619,12 @@ def add_sku(request):
         if "add_sku" in request.POST:
             form = SKUForm(request.POST)
             if form.is_valid():
-                form.save()
+                skus=form.save()
+                ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="SKU",
+                object_name=skus.code)
                 return redirect('add_sku')
 
         elif "upload_csv" in request.POST:
@@ -587,8 +657,14 @@ def add_sku(request):
                         region=region  # may be None if region doesn't exist
                     )
                     added += 1
+                ActivityLog.objects.create(
+                user=request.user,
+                action="uploaded",
+                object_type="SKU CSV",  
+                object_name=f"Uploaded {added} new SKUs via CSV file")
 
                 upload_feedback = f"{added} SKUs added. {skipped} duplicates skipped."
+
 
     return render(request, 'management/add_skus.html', {
         'form': form,
@@ -600,6 +676,12 @@ def add_sku(request):
 @login_required
 def delete_sku(request, sku_id):
     sku = get_object_or_404(SKU, id=sku_id)
+    ActivityLog.objects.create(
+        user=request.user,
+        action="deleted",
+        object_type="SKU",
+        object_name=sku.code
+    )
     sku.delete()
     return redirect('add_sku')
 @login_required
@@ -609,6 +691,12 @@ def edit_sku(request, sku_id):
         form = SKUForm(request.POST, instance=sku)
         if form.is_valid():
             form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="updated",
+                object_type="SKU",
+                object_name=sku.code
+            )
             return redirect('add_sku')
     else:
         form = SKUForm(instance=sku)
@@ -617,3 +705,170 @@ def edit_sku(request, sku_id):
         'form': form,
         'sku': sku
     })
+
+
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_panel_view(request):
+    user_form = UserCreationForm()
+    group_form = GroupCreationForm()
+    assign_form = AssignUserToGroupForm()
+
+    if request.method == "POST":
+        if 'add_user' in request.POST:
+            user_form = UserCreationForm(request.POST)
+            if user_form.is_valid():
+                user = user_form.save(commit=False)
+                user.set_password(user_form.cleaned_data['password'])
+                user.save()
+                ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="User",
+                object_name=user.username)
+
+        elif 'add_group' in request.POST:
+            group_form = GroupCreationForm(request.POST)
+            if group_form.is_valid():
+                group = group_form.save()
+                ActivityLog.objects.create(
+                user=request.user,
+                action="created",
+                object_type="Group",
+                object_name=group.name)
+
+        elif 'assign_group' in request.POST:
+            assign_form = AssignUserToGroupForm(request.POST)
+            if assign_form.is_valid():
+                user = assign_form.cleaned_data['user']
+                group = assign_form.cleaned_data['group']
+                user.groups.add(group)
+                ActivityLog.objects.create(
+                user=request.user,
+                action="assigned",
+                object_type="Group",
+                object_name=f"{user.username} → {group.name}")
+        
+
+    users = User.objects.all()
+    groups = Group.objects.prefetch_related('permissions')
+    permissions = Permission.objects.all()
+    active_users = get_active_users()
+
+    logs = ActivityLog.objects.select_related('user').order_by('-timestamp')[:20]
+
+    return render(request, 'management/admin_panel.html', {
+        'user_form': user_form,
+        'group_form': group_form,
+        'assign_form': assign_form,
+        'active_users': active_users,
+        'users': users,
+        'groups': groups,
+        'permissions': permissions,
+        'active_sessions': active_users,
+        'activity_logs': logs,
+    })
+@user_passes_test(lambda u: u.is_superuser)
+def edit_group(request):
+    if request.method == 'POST':
+        group_id = request.POST.get('group_id')
+        new_name = request.POST.get('name')
+        group = get_object_or_404(Group, id=group_id)
+        group.name = new_name
+        group.save()
+        ActivityLog.objects.create(
+            user=request.user,
+            action="edited",
+            object_type="Group",
+            object_name=new_name
+        )
+    return redirect('admin_panel')
+
+@user_passes_test(lambda u: u.is_superuser)
+def delete_group(request):
+    if request.method == 'POST':
+        group_id = request.POST.get('group_id')
+        group = get_object_or_404(Group, id=group_id)
+        ActivityLog.objects.create(
+            user=request.user,
+            action="deleted",
+            object_type="Group",
+            object_name=group.name
+        )
+        group.delete()
+    return redirect('admin_panel')
+
+from django.contrib.auth.models import User
+from django.contrib import messages
+
+@user_passes_test(lambda u: u.is_superuser)
+def edit_user(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(id=user_id)
+            user.username = username
+            user.email = email
+            user.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="edited",
+                object_type="User",
+                object_name=username
+            )
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+
+    return redirect('admin_panel')
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def delete_user(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        try:
+            user = User.objects.get(id=user_id)
+            ActivityLog.objects.create(
+                user=request.user,
+                action="deleted",
+                object_type="User",
+                object_name=user.username
+            )
+            user.delete()
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+
+    return redirect('admin_panel')
+
+
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+
+def get_active_users():
+    sessions = Session.objects.filter(expire_date__gte=now())
+    active_users = []
+
+    for session in sessions:
+        data = session.get_decoded()
+        user_id = data.get('_auth_user_id')
+        login_time = data.get('login_time')
+        ip_address = data.get('ip_address', 'N/A')
+
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+                active_users.append({
+                    'user': user,
+                    'login_time': login_time or 'N/A',
+                    'ip': ip_address
+                })
+            except User.DoesNotExist:
+                continue
+
+    return active_users
+

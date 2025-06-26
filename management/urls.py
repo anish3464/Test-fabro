@@ -28,9 +28,14 @@ urlpatterns = [
     path('add-sku/', views.add_sku, name='add_sku'),
     path('delete-sku/<int:sku_id>/', views.delete_sku, name='delete_sku'),
     path('edit-sku/<int:sku_id>/', views.edit_sku, name='edit_sku'),
-
+    path('admin_panel/', views.admin_panel_view, name='admin_panel'),
+    path('admin-panel/edit-group/', views.edit_group, name='edit_group'),
+    path('admin-panel/delete-group/', views.delete_group, name='delete_group'),
+    path('admin-panel/edit-user/', views.edit_user, name='edit_user'),
+    path('admin-panel/delete-user/', views.delete_user, name='delete_user'),
 
     
+
 
         
 

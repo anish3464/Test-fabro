@@ -590,7 +590,7 @@
                         {% for complaint in complaints %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ complaint.date }}</td>
+                            <td>{{ complaint.date|date:"d-M-y" }}</td>
                             <td>{{ complaint.channel|default:"-" }}</td>
                             <td>{{ complaint.country|default:"-" }}</td>
                             <td>{{ complaint.case_category|default:"-" }}</td>
@@ -598,7 +598,13 @@
                             <td>{{ complaint.person.name|default:"-" }}</td>
                             <td>{{ complaint.brand|default:"-" }}</td>
                             <td>{{ complaint.model|default:"-" }}</td>
-                            <td>{{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}</td>
+                            <td>
+                                {% if complaint.year %}
+                                    {{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ complaint.series|default:"-" }}</td>
                             <td>{{ complaint.material|default:"-" }}</td>                          
                             <td>
@@ -645,7 +651,7 @@
                                     <div class="detail-grid">
                                         <div class="detail-item">
                                             <div class="detail-label">Date</div>
-                                            <div class="detail-value">{{ complaint.date }}</div>
+                                            <div class="detail-value">{{ complaint.date|date:"d-M-y" }}</div>
                                         </div>
                                         <div class="detail-item">
                                             <div class="detail-label">Status</div>
@@ -697,7 +703,13 @@
                                         </div>
                                         <div class="detail-item">
                                             <div class="detail-label">Year</div>
-                                            <div class="detail-value">{{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}</div>
+                                            <div class="detail-value">
+                                                {% if complaint.year %}
+                                                    {{ complaint.year.year_start|stringformat:"s"|slice:"-2:" }}-{{ complaint.year.year_end|stringformat:"s"|slice:"-2:" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </div>
                                         </div>                    
                                         <div class="detail-item">
                                             <div class="detail-label">Series</div>
@@ -713,7 +725,13 @@
                                         </div>
                                         <div class="detail-item">
                                             <div class="detail-label">CAD Date</div>
-                                            <div class="detail-value">{{ complaint.cad_date }}</div>
+                                            <div class="detail-value">
+                                                {% if complaint.cad_date %}
+                                                    {{ complaint.cad_date|date:"d-M-y" }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
 

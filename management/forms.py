@@ -1,5 +1,5 @@
 from django import forms
-from .models import Complaint, ComplaintMedia
+from .models import Complaint, ComplaintMedia, MasterSetting, Brand, Model, SubModel, YearRange, SKU
 
 class CarDetailsForm(forms.Form):
     layout_code = forms.CharField(label="Layout Code", max_length=100)
@@ -35,9 +35,6 @@ class CarDetailsForm(forms.Form):
         
         return cleaned_data
 
-from django import forms
-from .models import MasterSetting
-
 class MasterSettingForm(forms.ModelForm):
     class Meta:
         model = MasterSetting
@@ -46,9 +43,6 @@ class MasterSettingForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-select'}),
             'name': forms.TextInput(attrs={'class': 'form-input'}),
             }
-
-from django import forms
-from .models import Complaint, MasterSetting, Brand, Model, SubModel, YearRange
 
 class ComplaintForm(forms.ModelForm):
     class Meta:
@@ -119,14 +113,9 @@ class ComplaintForm(forms.ModelForm):
             self.fields['year'].queryset = YearRange.objects.filter(sub_model=self.instance.sub_model)
 
 # forms.py
-from django import forms
-
 class UploadCSVForm(forms.Form):
     csv_file = forms.FileField(label="Upload CSV File")
 
-
-from .models import SKU
-from django import forms
 class SKUForm(forms.ModelForm):
     class Meta:
         model = SKU
@@ -140,6 +129,30 @@ class SKUForm(forms.ModelForm):
         super(SKUForm, self).__init__(*args, **kwargs)
         self.fields['region'].queryset = MasterSetting.objects.filter(category='Region')
 
+    def clean_code(self):
+        code = self.cleaned_data.get('code')
+        if self.instance.pk:
+            # Editing existing SKU
+            if SKU.objects.filter(code=code).exclude(pk=self.instance.pk).exists():
+                raise forms.ValidationError("SKU code already exists.")
+        else:
+            # Creating new SKU
+            if SKU.objects.filter(code=code).exists():
+                raise forms.ValidationError("SKU code already exists.")
+        return code
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        if description:
+            if self.instance.pk:
+                # Editing existing SKU
+                if SKU.objects.filter(description=description).exclude(pk=self.instance.pk).exists():
+                    raise forms.ValidationError("SKU description already exists.")
+            else:
+                # Creating new SKU
+                if SKU.objects.filter(description=description).exists():
+                    raise forms.ValidationError("SKU description already exists.")
+        return description
 
 class SKUUploadForm(forms.Form):
     csv_file = forms.FileField(label="Upload CSV File")
@@ -151,3 +164,22 @@ class SKUUploadForm(forms.Form):
     widgets = {
         'csv_file': forms.ClearableFileInput(attrs={'class': 'file-input'}),
     }
+
+from django import forms
+from django.contrib.auth.models import User, Group, Permission
+
+class UserCreationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'is_staff', 'is_superuser']
+
+class GroupCreationForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'permissions']
+
+class AssignUserToGroupForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all())
+    group = forms.ModelChoiceField(queryset=Group.objects.all())

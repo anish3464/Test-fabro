@@ -2,6 +2,9 @@ from django.db import models
 import os
 import random
 import string
+from django.contrib.auth.models import User
+from django.utils import timezone
+
 class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -74,6 +77,7 @@ class MasterSetting(models.Model):
     
 def generate_complaint_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
 class Complaint(models.Model):
     complaint_id = models.CharField(primary_key=True, max_length=10, unique=True, default=generate_complaint_id)
     date = models.DateField(auto_now_add=False)
@@ -156,6 +160,17 @@ class ComplaintMedia(models.Model):
 
     def __str__(self):
         return os.path.basename(self.file.name)
-    
 
+# Activity Log Model
+from django.db import models
+from django.contrib.auth.models import User
 
+class ActivityLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    action = models.CharField(max_length=100)
+    object_type = models.CharField(max_length=100)
+    object_name = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.user} - {self.action} {self.object_type} {self.object_name}"
